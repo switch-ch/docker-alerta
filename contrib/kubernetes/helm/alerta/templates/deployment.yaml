@@ -65,6 +65,9 @@ spec:
             - name: alerta-config
               mountPath: /app/alertad.conf
               subPath: alertad.conf
+            - name: alerta-config
+              mountPath: /venv/lib/python3.6/site-packages/alerta/webhooks/prometheus.py
+              subPath: prometheus.py
               {{- if .Values.alertaWebUIConfig }}
             - name: alerta-config
               mountPath: /app/config.js

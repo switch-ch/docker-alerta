@@ -1,5 +1,7 @@
 apiVersion: v1
 data:
+  prometheus.py: |
+{{ .Files.Get "prometheus.py" | indent 4 }}
   alertad.conf: |
     {{- if .Values.alertaConfig }}
     {{ range $key, $value := .Values.alertaConfig }}
