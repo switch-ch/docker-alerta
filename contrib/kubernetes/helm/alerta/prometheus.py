@@ -46,6 +46,8 @@ def parse_prometheus(alert: JSON, external_url: str) -> Alert:
 
     if status == 'firing':
         severity = labels.pop('severity', 'warning')
+        if not (severity in ['security','critical','major','minor','warning','informational','debug','trace','indeterminate','cleared','normal','ok','unknown']):
+            severity = 'unknown'
         create_time = starts_at
     elif status == 'resolved':
         severity = alarm_model.DEFAULT_NORMAL_SEVERITY
@@ -76,8 +78,11 @@ def parse_prometheus(alert: JSON, external_url: str) -> Alert:
     description = annotations.pop('description', None)
     text = description or message or summary or '{}: {} is {}'.format(severity.upper(), resource, event)
 
+    link = annotations.pop('link', None)
+    if link:
+        annotations['link'] = '<a href="{}">{}</a>'.format(link, link)
     if external_url:
-        annotations['externalUrl'] = external_url  # needed as raw URL for bi-directional integration
+        annotations['externalUrl'] = '<a href="http:/{}">Alertmanager</a>'.format(external_url)
     if 'generatorURL' in alert:
         annotations['moreInfo'] = '<a href="{}" target="_blank">Prometheus Graph</a>'.format(alert['generatorURL'])
     attributes = annotations  # any annotations left over are used for attributes
